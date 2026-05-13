@@ -21,7 +21,7 @@ public class PeliculasService {
     @Autowired
     private PeliculasRepository peliculasRepository;
 
-    private final String CARPETA_VIDEOS = "C:/tfg_videos/";
+    private final String CARPETA_VIDEOS = "uploads/";
 
     public List<ListaPeliculas> listarSoloPublicadas() {
         return peliculasRepository.findByPublicadaTrue();
@@ -47,7 +47,7 @@ public class PeliculasService {
             peli.setResenas(new ArrayList<>());
 
             if (archivo != null && !archivo.isEmpty()) {
-                Path directorio = Paths.get(CARPETA_VIDEOS);
+                Path directorio = Paths.get(CARPETA_VIDEOS).toAbsolutePath().normalize();
                 if (Files.notExists(directorio)) {
                     Files.createDirectories(directorio);
                 }
@@ -77,7 +77,7 @@ public class PeliculasService {
         peli.setGenero(genero);
         peli.setValoracion(valoracion);
         peli.setUrlVideo(urlVideo);
-        Path directorio = Paths.get(CARPETA_VIDEOS);
+        Path directorio = Paths.get(CARPETA_VIDEOS).toAbsolutePath().normalize();
         if (archivo != null && !archivo.isEmpty()) {
             if (urlAnterior != null && !urlAnterior.isEmpty() && !urlAnterior.startsWith("http")) {
                 Path rutaArchivoAnterior = directorio.resolve(urlAnterior);
@@ -113,7 +113,8 @@ public class PeliculasService {
                 boolean esUrlExterna = videoPathOrUrl.startsWith("http") || videoPathOrUrl.startsWith("https");
                 if (!esUrlExterna) {
                     try {
-                        Files.deleteIfExists(Paths.get(CARPETA_VIDEOS + videoPathOrUrl));
+                        Path directorio = Paths.get(CARPETA_VIDEOS).toAbsolutePath().normalize();
+                        Files.deleteIfExists(directorio.resolve(videoPathOrUrl));
                     } catch (IOException e) {
                         System.err.println("No se pudo eliminar el archivo físico: " + e.getMessage());
                     } catch (Exception e) {
