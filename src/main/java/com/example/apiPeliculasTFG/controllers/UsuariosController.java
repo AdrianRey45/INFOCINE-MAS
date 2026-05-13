@@ -1,0 +1,54 @@
+package com.example.apiPeliculasTFG.controllers;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import com.example.apiPeliculasTFG.entity.Usuarios;
+import com.example.apiPeliculasTFG.service.UsuariosService;
+
+@RestController
+@RequestMapping("/usuarios")
+@CrossOrigin(origins = "*")
+public class UsuariosController {
+
+    @Autowired
+    private UsuariosService usuariosService;
+
+    @PostMapping("/crearSesion")
+    public ResponseEntity<?> crearSesion(@RequestBody Usuarios nuevoUsuario) {
+        try {
+            if (nuevoUsuario.getAvatarIcon() == null || nuevoUsuario.getAvatarIcon().isEmpty()) {
+                nuevoUsuario.setAvatarIcon(""); 
+            }
+            
+            if (nuevoUsuario.getRol() == null || nuevoUsuario.getRol().isEmpty()) {
+                nuevoUsuario.setRol("USER");
+            }
+            
+            Usuarios creado = usuariosService.crearUsuario(nuevoUsuario);
+            return ResponseEntity.ok(creado);
+        } catch (org.springframework.dao.DataIntegrityViolationException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Email-duplicado");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @PostMapping("/iniciarSesion")
+    public ResponseEntity<?> iniciarSesion(@RequestBody Usuarios loginData) {
+        try {
+            Usuarios usuario = usuariosService.login(loginData.getEmail(), loginData.getPassword());
+            return ResponseEntity.ok(usuario);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(401).body(e.getMessage());
+        }
+    }
+
+    @PutMapping("/actualizarUsuario/{id}")
+    public ResponseEntity<Usuarios> actualizarUsuario(@PathVariable String id, @RequestBody Usuarios usuarioData) {
+        Usuarios actualizado = usuariosService.actualizarUsuario(id, usuarioData);
+        return ResponseEntity.ok(actualizado);
+    }
+}
