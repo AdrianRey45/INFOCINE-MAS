@@ -10,7 +10,6 @@ import com.example.apiPeliculasTFG.service.UsuariosService;
 
 @RestController
 @RequestMapping("/usuarios")
-@CrossOrigin(origins = "*")
 public class UsuariosController {
 
     @Autowired
