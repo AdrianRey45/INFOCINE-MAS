@@ -13,6 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/peliculas")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class PeliculasController {
 
     @Autowired

@@ -12,6 +12,7 @@ import com.example.apiPeliculasTFG.service.ResenasService;
 
 @RestController
 @RequestMapping("/resenas")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class ResenasController {
 
     @Autowired
